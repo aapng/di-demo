@@ -25,7 +25,7 @@ import ReviewsServicesInterfaces
 	private let args: Args
 
 	public init(
-		deps: Deps = AppContainer.make(type: Deps.self, init: Deps.init),
+		deps: Deps = make(init: Deps.init),
 		args: Args
 	) {
 		self.deps = deps
