@@ -4,10 +4,14 @@ import ReviewsServicesInterfaces
 
 /// VM для отображения отзывов
 @MainActor public class ReviewsListVM {
+	public struct Deps {
+		let reviewsService: IReviewsService
 
-	@Service private var reviewsService: IReviewsService
-	// другие сервисы от которых зависит VM объявляем ниже
-	// ...
+		/// Генерируется
+		public init(reviewsService: IReviewsService) {
+			self.reviewsService = reviewsService
+		}
+	}
 
 	var viewModelChanged: (() -> Void)?
 
@@ -17,17 +21,21 @@ import ReviewsServicesInterfaces
 		}
 	}
 
+	private let deps: Deps
 	private let args: Args
 
-	// в ините больше нет зависимостей, остаются только аргументы
-	public init(args: Args) {
+	public init(
+		deps: Deps = AppContainer.make(type: Deps.self, init: Deps.init),
+		args: Args
+	) {
+		self.deps = deps
 		self.args = args
 	}
 
 	func willAppear() async {
 		do {
 			state = .loading
-			let reviews = try await reviewsService.fetchReviews(cardId: args.cardId)
+			let reviews = try await deps.reviewsService.fetchReviews(cardId: args.cardId)
 			state = .success(reviews)
 		} catch {
 			state = .error

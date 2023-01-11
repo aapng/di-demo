@@ -109,3 +109,10 @@ private extension Container {
         }
     }
 }
+
+/// Нужно много экземпляров таких функций, они генерируются
+public func make<Object, A1>(type: Object.Type, init: @escaping (A1) -> Object) -> Object {
+	let a1 = Container.shared.resolve() as A1
+	let object = `init`(a1)
+	return object
+}
